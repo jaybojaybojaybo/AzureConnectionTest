@@ -36,5 +36,53 @@ namespace AzureConnectionTest.Controllers
             ViewBag.BlobContainerName = container.Name;
             return View();
         }
+
+        public string UploadBlob()
+        {
+            CloudBlobContainer container = GetCloudBlobContainer();
+            CloudBlockBlob blob = container.GetBlockBlobReference("myBlob");
+            using (var fileStream = System.IO.File.OpenRead(@"C:\Users\Jasun\Desktop\ThreeDB_FrontPage.PNG"))
+            {
+                blob.UploadFromStreamAsync(fileStream).Wait();
+            }
+            return "success!";
+        }
+
+        public ActionResult ListBlobs()
+        {
+            CloudBlobContainer container = GetCloudBlobContainer();
+            List<string> blobs = new List<string>();
+            BlobResultSegment resultSegment = container.ListBlobsSegmentedAsync(null).Result;
+            foreach (IListBlobItem item in resultSegment.Results)
+            {
+                if (item.GetType() == typeof(CloudBlockBlob))
+                {
+                    CloudBlockBlob blob = (CloudBlockBlob)item;
+                    blobs.Add(blob.Name);
+                }
+                else if (item.GetType() == typeof(CloudPageBlob))
+                {
+                    CloudPageBlob blob = (CloudPageBlob)item;
+                    blobs.Add(blob.Name);
+                }
+                else if (item.GetType() == typeof(CloudBlobDirectory))
+                {
+                    CloudBlobDirectory dir = (CloudBlobDirectory)item;
+                    blobs.Add(dir.Uri.ToString());
+                }
+            }
+            return View(blobs);
+        }
+
+        public string DownloadBlob()
+        {
+            CloudBlobContainer container = GetCloudBlobContainer();
+            CloudBlockBlob blob = container.GetBlockBlobReference("myBlob");
+            using (var fileStream = System.IO.File.OpenWrite(@"C:\Users\Jasun\Desktop\ThreeDB_FrontPage_Copy.PNG"))
+            {
+                blob.DownloadToStreamAsync(fileStream).Wait();
+            }
+            return "success!";
+        }
     }
 }

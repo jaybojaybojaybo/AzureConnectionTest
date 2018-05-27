@@ -1,0 +1,13 @@
+
+@{
+	ViewData["Title"] = "ListBlobs";
+}
+
+<h2>List Blobs</h2>
+
+<ul>
+	@foreach (var item in Model)
+	{
+		<li>@item</li>
+	}
+</ul>
