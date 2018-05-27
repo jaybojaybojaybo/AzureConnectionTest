@@ -84,5 +84,13 @@ namespace AzureConnectionTest.Controllers
             }
             return "success!";
         }
+
+        public string DeleteBlob()
+        {
+            CloudBlobContainer container = GetCloudBlobContainer();
+            CloudBlockBlob blob = container.GetBlockBlobReference("myBlob");
+            blob.DeleteAsync().Wait();
+            return "success!";
+        }
     }
 }
